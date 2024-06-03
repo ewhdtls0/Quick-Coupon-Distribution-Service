@@ -13,7 +13,7 @@ class CouponServiceTest {
 
     @BeforeEach
     void init() {
-        couponService.initializeAvailableCoupon(10);
+        couponService.initializeAvailableCoupon(10); // 10장 발급
     }
 
     @Test
@@ -21,14 +21,11 @@ class CouponServiceTest {
     void firstComeCouponWithNoLockTest() throws InterruptedException {
         for (int i=0; i<1000; i++) {
             new Thread(() -> {
-                try {
-                    couponService.issueCouponNoLock(1L);
-                } catch (Exception e) {
-                    System.out.println("e = " + e);
-                }
+                couponService.issueCouponNoLock(1L);
             }).start();
         }
         Thread.sleep(1000);
+        /** 10장 이상 발급된다. */
     }
 
     @Test
@@ -36,14 +33,11 @@ class CouponServiceTest {
     void firstComeCouponWithLockTest() throws InterruptedException {
         for (int i=0; i<1000; i++) {
             new Thread(() -> {
-                try {
-                    couponService.issueCouponWithLock(1L);
-                } catch (Exception e) {
-                    System.out.println("e = " + e.getMessage());
-                }
+                couponService.issueCouponWithLock(1L);
             }).start();
         }
         Thread.sleep(1000);
+        /** 정확히 10장 발급된다. */
     }
 
 }

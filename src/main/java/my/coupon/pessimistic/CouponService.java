@@ -47,14 +47,7 @@ public class CouponService {
         synchronized (this) {
             Coupon findCoupon = couponRepository.findByIdWithLock(couponId)
                     .orElseThrow(() -> new RuntimeException("대상 쿠폰이 없습니다."));
-
-            if (findCoupon.getAvailableCount() > 0) {
-                findCoupon.updateCouponCount(findCoupon.getAvailableCount() - 1); // 쿠폰 발급 수량 차감
-                couponRepository.save(findCoupon);
-                System.out.println("쿠폰 남은 수량 : " + findCoupon.getAvailableCount());
-            } else {
-                throw new RuntimeException("쿠폰이 모두 소진 되었습니다.");
-            }
+            issueCoupon(findCoupon);
         }
 
     }
@@ -64,16 +57,17 @@ public class CouponService {
         synchronized (this) {
             Coupon findCoupon = couponRepository.findById(couponId)
                     .orElseThrow(() -> new RuntimeException("대상 쿠폰이 없습니다."));
-
-            if (findCoupon.getAvailableCount() > 0) {
-                findCoupon.updateCouponCount(findCoupon.getAvailableCount() - 1); // 쿠폰 발급 수량 차감
-                couponRepository.save(findCoupon);
-                System.out.println("쿠폰 남은 수량 : " + findCoupon.getAvailableCount());
-            } else {
-                throw new RuntimeException("쿠폰이 모두 소진 되었습니다.");
-            }
+            issueCoupon(findCoupon);
         }
 
+    }
+
+    private void issueCoupon(Coupon findCoupon) {
+        if (findCoupon.getAvailableCount() > 0) {
+            findCoupon.updateCouponCount(findCoupon.getAvailableCount() - 1); // 쿠폰 발급 수량 차감
+            couponRepository.save(findCoupon);
+            log.info("쿠폰 남은 수량 : " + findCoupon.getAvailableCount());
+        }
     }
 
 }

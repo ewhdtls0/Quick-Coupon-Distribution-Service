@@ -10,7 +10,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.GenericToStringSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages={"my.coupon.advanced"})
 public class CouponApplication {
 
 	public static void main(String[] args) {

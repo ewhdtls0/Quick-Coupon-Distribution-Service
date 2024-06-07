@@ -1,5 +1,8 @@
 package my.coupon.advanced.domain.enums;
 
+import lombok.Getter;
+
+@Getter
 public enum CouponType {
     FIX("FIX"),
     RATE("RATE");

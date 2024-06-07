@@ -2,6 +2,7 @@ package my.coupon.advanced.domain;
 
 import jakarta.persistence.*;
 import lombok.Getter;
+import my.coupon.advanced.domain.enums.CouponType;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,9 @@ public class Issue {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "coupon_id")
     private Coupon coupon;
+
+    @Enumerated(value = EnumType.STRING)
+    private CouponType couponType;
 
     @CreatedDate
     private LocalDateTime issueDate;

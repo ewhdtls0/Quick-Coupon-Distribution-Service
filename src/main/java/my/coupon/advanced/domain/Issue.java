@@ -1,7 +1,7 @@
 package my.coupon.advanced.domain;
 
 import jakarta.persistence.*;
-import lombok.Getter;
+import lombok.*;
 import my.coupon.advanced.domain.enums.CouponType;
 import my.coupon.advanced.domain.enums.CouponValue;
 import org.springframework.data.annotation.CreatedDate;
@@ -10,6 +10,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder
 public class Issue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

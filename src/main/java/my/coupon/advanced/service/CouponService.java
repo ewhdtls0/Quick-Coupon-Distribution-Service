@@ -3,31 +3,43 @@ package my.coupon.advanced.service;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import my.coupon.advanced.domain.Coupon;
+import my.coupon.advanced.domain.Issue;
+import my.coupon.advanced.domain.Member;
+import my.coupon.advanced.domain.enums.CouponType;
+import my.coupon.advanced.domain.enums.CouponValue;
 import my.coupon.advanced.dto.CouponRequest;
 import my.coupon.advanced.repository.CouponRepository;
+import my.coupon.advanced.repository.IssueRepository;
+import my.coupon.advanced.repository.MemberRepository;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Transactional
 @Service
 @RequiredArgsConstructor
 public class CouponService{
     private final CouponRepository couponRepository;
+    private final MemberRepository memberRepository;
+    private final IssueRepository issueRepository;
+
     private final RedisTemplate<String, Object> redisTemplate;
 
     private final String COUPON_KEY = "COUPON_CODE_";
 
     /**
      * 쿠폰 발행 서비스
-     * TODO: 어떤 멤버에게 어떤 형태의 쿠폰이 어떤 가치로 발행 되었는지
      * @param couponId
      * @return
      */
-    public boolean issueCoupon(Long couponId) {
+    public boolean issueCoupon(Long couponId, Long memberId) {
         Coupon findCoupon = couponRepository.findByIdAndAvailableTrue(couponId)
                 .orElseThrow(() -> new EntityNotFoundException("해당 쿠폰이 발행 시간 되지 않았거나, 모두 발행 되었습니다."));
+        Member findMember = memberRepository.findById(memberId)
+                .orElseThrow(() -> new EntityNotFoundException("멤버 정보를 찾을 수 없습니다."));
 
         Long remainingCoupons = getRemainingCoupons(couponId);
 
@@ -38,6 +50,19 @@ public class CouponService{
             if (remainingCoupons == 1) {
                 findCoupon.updateAvailable(false);
             }
+
+            CouponType randomCouponType = CouponType.getRandomType();
+            CouponValue randomCouponValue = CouponValue.getRandomValueForType(randomCouponType);
+
+            Issue issueEntity = Issue.builder()
+                    .coupon(findCoupon)
+                    .member(findMember)
+                    .issueDate(LocalDateTime.now())
+                    .couponType(randomCouponType)
+                    .couponValue(randomCouponValue)
+                    .build();
+
+            issueRepository.save(issueEntity);
 
             return true;
         }

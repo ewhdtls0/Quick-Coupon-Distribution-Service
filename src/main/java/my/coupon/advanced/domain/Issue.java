@@ -3,6 +3,7 @@ package my.coupon.advanced.domain;
 import jakarta.persistence.*;
 import lombok.Getter;
 import my.coupon.advanced.domain.enums.CouponType;
+import my.coupon.advanced.domain.enums.CouponValue;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -24,6 +25,9 @@ public class Issue {
 
     @Enumerated(value = EnumType.STRING)
     private CouponType couponType;
+
+    @Enumerated(value = EnumType.STRING)
+    private CouponValue couponValue; // 쿠폰 가치
 
     @CreatedDate
     private LocalDateTime issueDate;

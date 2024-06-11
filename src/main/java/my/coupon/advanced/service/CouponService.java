@@ -2,6 +2,7 @@ package my.coupon.advanced.service;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import my.coupon.advanced.domain.Coupon;
 import my.coupon.advanced.domain.Issue;
 import my.coupon.advanced.domain.Member;
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 
+@Slf4j
 @Transactional
 @Service
 @RequiredArgsConstructor
@@ -108,9 +110,9 @@ public class CouponService{
      * @return
      */
     public Long getRemainingCoupons(Long couponId) {
-        Long remainingCoupons = (Long) redisTemplate.opsForValue().get(COUPON_KEY + couponId);
+        String remainingCouponsStr = (String) redisTemplate.opsForValue().get(COUPON_KEY + couponId);
 
-        return remainingCoupons != null ? remainingCoupons : 0;
+        return Long.parseLong(remainingCouponsStr);
     }
 
     /**
@@ -129,8 +131,10 @@ public class CouponService{
      */
     @Scheduled(fixedRate = 60000)  // 1분마다 실행
     public void syncAllCouponsWithDB() {
+        log.info("쿠폰 정보 Redis 서버와 동기화 시작합니다...");
         couponRepository.findAll().forEach(coupon -> {
             syncRedisWithDB(coupon.getId());
         });
+        log.info("쿠폰 정보 Redis 서버와 동기화 되었습니다...");
     }
 }

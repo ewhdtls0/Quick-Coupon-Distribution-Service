@@ -1,25 +1,30 @@
 package my.coupon.advanced;
 
 import jakarta.persistence.EntityManager;
+import my.coupon.advanced.domain.Coupon;
 import my.coupon.advanced.domain.Member;
 import my.coupon.advanced.dto.CouponRequest;
 import my.coupon.advanced.dto.CouponResponse;
 import my.coupon.advanced.service.CouponService;
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
 public class CouponServiceTest {
     @Autowired
     EntityManager em;
+    @Autowired
+    RedisTemplate<String, Object> redisTemplate;
     @Autowired
     CouponService couponService;
 
@@ -71,5 +76,25 @@ public class CouponServiceTest {
 
             couponService.addCoupon(request2);
         });
+    }
+
+    @Test
+    @DisplayName("쿠폰 발행 시작한다.")
+    void startIssueCouponTest() {
+        Coupon coupon = Coupon.builder()
+                .available(false)
+                .name("[6월] 할인 쿠폰")
+                .remain(100)
+                .build();
+
+        em.persist(coupon);
+        em.flush();
+        em.clear();
+
+        couponService.startIssueCoupon(coupon.getId());
+
+        Coupon findCoupon = em.find(Coupon.class, coupon.getId());
+
+        assertThat(findCoupon.isAvailable()).isEqualTo(true);
     }
 }

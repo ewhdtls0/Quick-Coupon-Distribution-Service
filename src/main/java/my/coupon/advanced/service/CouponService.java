@@ -89,13 +89,17 @@ public class CouponService{
     }
 
     /**
-     * 쿠폰 초기화
-     * @param request
+     * 쿠폰 발행 시작
+     * @param couponId
      */
-    public void initializeCoupon(CouponRequest request) {
-        Coupon couponEntity = Coupon.from(request);
-        Coupon savedCoupon = couponRepository.save(couponEntity);
-        redisTemplate.opsForValue().set(COUPON_KEY + savedCoupon.getId(), savedCoupon.getRemain());
+    public void startIssueCoupon(Long couponId) {
+        Coupon findCoupon = couponRepository.findById(couponId)
+                        .orElseThrow(() -> new EntityNotFoundException("쿠폰 정보를 찾을 수 없습니다"));
+        if(!findCoupon.isAvailable()) {
+            findCoupon.updateAvailable(true); // 쿠폰 발행 가능 상태로 변경
+        }
+
+        redisTemplate.opsForValue().set(COUPON_KEY + findCoupon.getId(), String.valueOf(findCoupon.getRemain()));
     }
 
     /**

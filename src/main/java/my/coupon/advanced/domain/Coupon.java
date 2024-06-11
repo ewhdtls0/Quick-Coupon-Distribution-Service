@@ -17,12 +17,15 @@ public class Coupon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    private String name;
+
     private int remain; // 남은 수량
 
     private boolean available;
 
     public static Coupon from(CouponRequest request) {
         return Coupon.builder()
+                .name(request.getCouponName())
                 .remain(request.getRemain())
                 .available(request.isAvailable())
                 .build();

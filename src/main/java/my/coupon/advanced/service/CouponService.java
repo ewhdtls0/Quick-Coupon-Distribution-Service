@@ -8,6 +8,7 @@ import my.coupon.advanced.domain.Member;
 import my.coupon.advanced.domain.enums.CouponType;
 import my.coupon.advanced.domain.enums.CouponValue;
 import my.coupon.advanced.dto.CouponRequest;
+import my.coupon.advanced.dto.CouponResponse;
 import my.coupon.advanced.repository.CouponRepository;
 import my.coupon.advanced.repository.IssueRepository;
 import my.coupon.advanced.repository.MemberRepository;

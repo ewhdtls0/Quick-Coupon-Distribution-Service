@@ -10,4 +10,7 @@ import java.util.Optional;
 public interface CouponRepository extends JpaRepository<Coupon, Long> {
     @Query("SELECT c FROM Coupon c WHERE c.id = :couponId AND c.available = true")
     Optional<Coupon> findByIdAndAvailableTrue(@Param("couponId") Long couponId);
+
+    @Query("SELECT c FROM Coupon c WHERE c.name = :couponName AND c.available = true")
+    Optional<Coupon> findByNameAndAvailableTrue(@Param("couponName") String couponName);
 }

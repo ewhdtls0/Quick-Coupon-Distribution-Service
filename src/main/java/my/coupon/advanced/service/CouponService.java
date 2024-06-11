@@ -32,6 +32,23 @@ public class CouponService{
     private final String COUPON_KEY = "COUPON_CODE_";
 
     /**
+     * 발행할 쿠폰 등록
+     * @param request
+     * @return
+     */
+    public CouponResponse addCoupon(CouponRequest request) {
+        couponRepository.findByNameAndAvailableTrue(request.getCouponName())
+                .ifPresent(coupon -> {
+                    throw new RuntimeException("이미 동일한 쿠폰이 등록 되어있습니다.");
+                });
+
+        Coupon couponEntity = Coupon.from(request);
+        Coupon savedCoupon = couponRepository.save(couponEntity);
+
+        return CouponResponse.from(savedCoupon);
+    }
+
+    /**
      * 쿠폰 발행 서비스
      * @param couponId
      * @return

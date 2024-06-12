@@ -37,18 +37,6 @@ public class CouponService {
         return findCoupon.getAvailableCount();
     }
 
-    /**
-     * 쿠폰 발급
-     *
-     * @param couponId
-     */
-    @Transactional
-    public synchronized void issueCouponNoLock(Long couponId) {
-        Coupon findCoupon = couponRepository.findById(couponId)
-                .orElseThrow(() -> new RuntimeException("대상 쿠폰이 없습니다."));
-        issueCoupon(findCoupon);
-    }
-
     @Transactional
     public synchronized void issueCouponLock(Long couponId) {
         Coupon findCoupon = couponRepository.findByIdWithLock(couponId)

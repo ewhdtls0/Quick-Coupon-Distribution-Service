@@ -12,7 +12,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
-@SpringBootApplication(scanBasePackages={"my.coupon.advanced"})
+//@SpringBootApplication(scanBasePackages={"my.coupon.advanced"})
+@SpringBootApplication
 public class CouponApplication {
 
 	public static void main(String[] args) {

@@ -16,24 +16,9 @@ class CouponServiceTest {
     }
 
     @Test
-    @DisplayName("No lock 낙관적 락 방식 선착순 쿠폰 발급 테스트")
-    void firstComeCouponNoOptimisticTest() throws InterruptedException {
-        for (int i=0; i<1000; i++) {
-            new Thread(() -> {
-                try {
-                    couponService.issueCouponNoLock(1L);
-                } catch (Exception e) {
-                    System.out.println("e.getMessage() = " + e.getMessage());
-                }
-            }).start();
-        }
-        Thread.sleep(1000);
-    }
-
-    @Test
-    @DisplayName("lock 낙관적 락 방식 선착순 쿠폰 발급 테스트")
+    @DisplayName("낙관적 락 방식 선착순 쿠폰 발급 테스트")
     void firstComeCouponOptimisticTest() throws InterruptedException {
-        for (int i=0; i<100; i++) {
+        for (int i=0; i<1000; i++) {
             new Thread(() -> {
                 try {
                     couponService.issueCouponLock(1L);

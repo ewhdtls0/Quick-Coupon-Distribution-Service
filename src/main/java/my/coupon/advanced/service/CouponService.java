@@ -57,9 +57,9 @@ public class CouponService{
      */
     public boolean issueCoupon(Long couponId, Long memberId) {
         Coupon findCoupon = couponRepository.findByIdAndAvailableTrue(couponId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 쿠폰이 발행 시간 되지 않았거나, 모두 발행 되었습니다."));
+                .orElseThrow(() -> new RuntimeException("해당 쿠폰이 발행 시간 되지 않았거나, 모두 발행 되었습니다."));
         Member findMember = memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("멤버 정보를 찾을 수 없습니다."));
+                .orElseThrow(() -> new RuntimeException("멤버 정보를 찾을 수 없습니다."));
 
         Long remainingCoupons = getRemainingCoupons(couponId);
 
@@ -96,7 +96,7 @@ public class CouponService{
      */
     public void startIssueCoupon(Long couponId) {
         Coupon findCoupon = couponRepository.findById(couponId)
-                        .orElseThrow(() -> new EntityNotFoundException("쿠폰 정보를 찾을 수 없습니다"));
+                        .orElseThrow(() -> new RuntimeException("쿠폰 정보를 찾을 수 없습니다"));
         if(!findCoupon.isAvailable()) {
             findCoupon.updateAvailable(true); // 쿠폰 발행 가능 상태로 변경
         }
@@ -121,7 +121,7 @@ public class CouponService{
      */
     public void syncRedisWithDB(Long couponId) {
         Coupon findCoupon = couponRepository.findById(couponId)
-                .orElseThrow(() -> new EntityNotFoundException("해당 쿠폰이 없습니다"));
+                .orElseThrow(() -> new RuntimeException("해당 쿠폰이 없습니다"));
         Long remainingCoupons = getRemainingCoupons(couponId);
         findCoupon.updateCouponCount(remainingCoupons.intValue());
     }

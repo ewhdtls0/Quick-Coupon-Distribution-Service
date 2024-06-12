@@ -1,6 +1,5 @@
 package my.coupon.advanced.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import my.coupon.advanced.domain.Coupon;
@@ -52,10 +51,10 @@ public class CouponService{
 
     /**
      * 쿠폰 발행 서비스
+     *
      * @param couponId
-     * @return
      */
-    public boolean issueCoupon(Long couponId, Long memberId) {
+    public void issueCoupon(Long couponId, Long memberId) {
         Coupon findCoupon = couponRepository.findByIdAndAvailableTrue(couponId)
                 .orElseThrow(() -> new RuntimeException("해당 쿠폰이 발행 시간 되지 않았거나, 모두 발행 되었습니다."));
         Member findMember = memberRepository.findById(memberId)
@@ -84,10 +83,8 @@ public class CouponService{
 
             issueRepository.save(issueEntity);
 
-            return true;
         }
 
-        return false;
     }
 
     /**

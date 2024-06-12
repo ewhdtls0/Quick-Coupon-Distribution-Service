@@ -7,6 +7,8 @@ import my.coupon.advanced.domain.Member;
 import my.coupon.advanced.dto.CouponRequest;
 import my.coupon.advanced.dto.CouponResponse;
 import my.coupon.advanced.service.CouponService;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,12 +19,14 @@ import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.Set;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @Transactional
 @SpringBootTest
-@TestPropertySource(properties = "=false")
 public class CouponServiceTest {
     @Autowired
     EntityManager em;
@@ -139,9 +143,9 @@ public class CouponServiceTest {
     @Rollback(value = false)
     @Test
     @DisplayName("쿠폰 멀티쓰레드 상황에서 원자적 발행된다")
-    void issueCouponOnMultiThreadTest() {
+    void issueCouponOnMultiThreadTest() throws InterruptedException {
         Coupon coupon = Coupon.builder()
-                .available(false)
+                .available(true)
                 .name("[6월] 할인 쿠폰")
                 .remain(10)
                 .build();
@@ -167,15 +171,22 @@ public class CouponServiceTest {
         em.clear();
 
         /** Before Each의 init 데이터 제외 */
-        for (int i = 1; i < 100; i++) {
+        for (int i = 1; i < 101; i++) {
             int finalI = i;
             new Thread(() -> {
-                try{
-                    couponService.issueCoupon(findCoupon.getId(), (long) finalI);
+                try {
+                    couponService.issueCoupon(coupon.getId(), (long) finalI);
                 } catch (Exception e) {
-                    System.out.println(e.getMessage());
+                    System.out.println("e.getMessage() = " + e.getMessage());
                 }
             }).start();
         }
+
+        Thread.sleep(3000);
+
+        List<Issue> issueList = em.createQuery("SELECT i FROM Issue i", Issue.class)
+                .getResultList();
+
+        assertThat(issueList).hasSize(10);
     }
 }

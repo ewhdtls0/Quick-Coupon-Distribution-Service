@@ -63,10 +63,10 @@ public class CouponService{
         Long remainingCoupons = getRemainingCoupons(couponId);
 
         if(remainingCoupons != null && remainingCoupons > 0) {
-            redisTemplate.opsForValue().decrement(COUPON_KEY + couponId);
+            Long decrement = redisTemplate.opsForValue().decrement(COUPON_KEY + couponId);
 
             // 마지막 쿠폰 이었을 경우 쿠폰 발행 불가로 변경
-            if (remainingCoupons == 1) {
+            if (decrement != null && decrement == 0) {
                 findCoupon.updateAvailable(false);
             }
 

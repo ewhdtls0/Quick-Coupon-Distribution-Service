@@ -38,7 +38,7 @@ public class CouponService {
     }
 
     /**
-     * 쿠폰 발급
+     * 쿠폰 발급 - 락
      *
      * @param couponId
      */
@@ -52,6 +52,10 @@ public class CouponService {
 
     }
 
+    /**
+     * 쿠폰 발급 - No 락
+     * @param couponId
+     */
     @Transactional
     public void issueCouponNoLock(Long couponId) {
         synchronized (this) {
